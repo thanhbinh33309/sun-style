@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sun Style - Demo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#180909;color:#fff;font-family:Arial,sans-serif}
+header{background:linear-gradient(90deg,#650000,#e7a62b,#650000);padding:18px;text-align:center;font-size:25px;font-weight:bold;color:#fff1b0}
+.wallet{margin:15px;padding:16px;text-align:center;background:#351313;border:1px solid #c99a35;border-radius:12px}
+.balance{font-size:25px;color:#ffd45c;font-weight:bold;margin-top:8px}
+main{max-width:520px;margin:auto;padding:12px}
+.panel{background:#2b1010;border:1px solid #a87829;border-radius:14px;padding:18px;margin-bottom:14px;text-align:center}
+h2{color:#ffcf54;margin-top:0}
+.dice{font-size:55px;letter-spacing:8px;margin:15px 0}
+button{border:0;border-radius:8px;padding:13px 16px;margin:5px;font-size:16px;font-weight:bold;cursor:pointer}
+.choice{width:42%;color:white}
+.tai{background:#b71919}
+.xiu{background:#1762a8}
+.gold{background:linear-gradient(#ffe69a,#d39a27);color:#451000}
+button:disabled{opacity:.5}
+input{width:100%;padding:12px;border-radius:8px;border:1px solid #c99a35;background:#160b0b;color:white;font-size:17px;margin:8px 0}
+#result{font-size:22px;color:#ffdc64;font-weight:bold;min-height:30px}
+.small{font-size:13px;color:#cbb9a0}
+.history{text-align:left;line-height:1.9;overflow-wrap:anywhere}
+footer{text-align:center;color:#b8a18a;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+<header>👑 SUN STYLE 👑</header>
+<div class="wallet">
+  ĐIỂM ẢO CỦA BẠN
+  <div class="balance"><span id="balance">10000</span> xu</div>
+  <div class="small">Bản demo giải trí, không có giá trị tiền thật</div>
+</div>
+<main>
+  <section class="panel">
+    <h2>🎲 TÀI XỈU 🎲</h2>
+    <div id="dice" class="dice">🎲 🎲 🎲</div>
+    <div id="result">Chọn cửa để chơi thử</div>
+    <p id="sum">Tổng: --</p>
+    <button class="choice tai" onclick="selectSide('Tài')">🔴 TÀI (11–17)</button>
+    <button class="choice xiu" onclick="selectSide('Xỉu')">🔵 XỈU (4–10)</button>
+    <p>Chọn số xu muốn cược:</p>
+    <input id="bet" type="number" min="1" value="100" inputmode="numeric">
+    <button class="gold" onclick="roll()">🎲 TUNG XÚC XẮC</button>
+    <p class="small">Mỗi lượt chỉ dùng xu ảo. Không nạp, rút hoặc đổi thưởng.</p>
+  </section>
+  <section class="panel">
+    <h2>📜 LỊCH SỬ VÁN</h2>
+    <div id="history" class="history">Chưa có ván nào.</div>
+    <button class="gold" onclick="resetDemo()">Đặt lại demo</button>
+  </section>
+</main>
+<footer>SUN STYLE DEMO • Điểm ảo, không giao dịch tiền thật</footer>
+<script>
+let balance=10000;
+let side="";
+let history=[];
+function selectSide(s){
+  side=s;
+  document.getElementById("result").textContent="Đã chọn "+s+" • Nhấn Tung xúc xắc";
+}
+function roll(){
+  if(!side){alert("Hãy chọn Tài hoặc Xỉu trước!");return;}
+  const input=document.getElementById("bet");
+  const bet=Number(input.value);
+  if(!Number.isInteger(bet)||bet<1){alert("Nhập số xu hợp lệ nhé!");return;}
+  if(bet>balance){alert("Bạn không đủ xu ảo!");return;}
+  const dice=[1,2,3].map(()=>Math.floor(Math.random()*6)+1);
+  const total=dice.reduce((a,b)=>a+b,0);
+  const outcome=(total>=11&&total<=17)?"Tài":"Xỉu";
+  if(total===3||total===18){
+    balance-=bet;
+    document.getElementById("result").textContent="Bộ ba! Thua lượt demo.";
+  }else if(side===outcome){
+    balance+=bet;
+    document.getElementById("result").textContent="🎉 Ra "+outcome+"! +"+bet+" xu";
+  }else{
+    balance-=bet;
+    document.getElementById("result").textContent="Ra "+outcome+". -"+bet+" xu";
+  }
+  document.getElementById("dice").textContent=dice.map(n=>["","⚀","⚁","⚂","⚃","⚄","⚅"][n]).join(" ");
+  document.getElementById("sum").textContent="Tổng: "+total;
+  document.getElementById("balance").textContent=balance;
+  history.unshift("Ván "+(history.length+1)+": "+dice.join("-")+" | Tổng "+total+" | "+outcome);
+  document.getElementById("history").innerHTML=history.slice(0,10).map(x=>"<div>"+x+"</div>").join("");
+  side="";
+}
+function resetDemo(){
+  balance=10000;history=[];side="";
+  document.getElementById("balance").textContent=balance;
+  document.getElementById("dice").textContent="🎲 🎲 🎲";
+  document.getElementById("result").textContent="Chọn cửa để chơi thử";
+  document.getElementById("sum").textContent="Tổng: --";
+  document.getElementById("history").textContent="Chưa có ván nào.";
+}
+</script>
+</body>
+</html>
